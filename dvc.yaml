@@ -1,0 +1,31 @@
+rostages:
+  raw_dataset_creation:
+    cmd: python src/load_data.py --config=params.yaml
+    deps:
+    - src/load_data.py
+    - data_given/train.csv
+    outs:
+    - data/raw/train.csv
+  
+  split_data:
+    cmd: python src/split_data.py --config=params.yaml
+    deps:
+    - src/split_data.py
+    - data/raw/train.csv
+    outs:
+    - data/processed/churn_train.csv
+    - data/processed/churn_test.csv
+
+  model_train:
+    cmd: python src/train_model.py --config=params.yaml
+    deps:
+    - data/processed/churn_train.csv
+    - data/processed/churn_test.csv
+    - src/train_model.py
+    params:
+    - random_forest.max_depth
+    - random_forest.n_estimators
+    metrics:
+    - report/scores.json:
+        cache: false
+
